@@ -6,32 +6,31 @@ import (
 	"log"
 	"net"
 
-	"github.com/sdinescu-dn/grpc_tests/chat"
+	chat "github.com/sdinescu-dn/grpc_tests/proto"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
+	chat.UnimplementedChatServiceServer
 }
 
-func (s *Server) SayHello(ctx context.Context, in *Message) (*Message, error) {
+func (s *Server) SayHello(ctx context.Context, in *chat.Message) (*chat.Message, error) {
 	log.Printf("Receive message body from client: %s", in.Body)
-	return &Message{Body: "Hello From the Server!"}, nil
+	return &chat.Message{Body: "Hello From the Server!"}, nil
 }
 
 func main() {
-
-	fmt.Println("Go gRPC Beginners Tutorial!")
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 9000))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := chat.Server{}
+	s := &Server{}
 
 	grpcServer := grpc.NewServer()
 
-	chat.RegisterChatServiceServer(grpcServer, &s)
+	chat.RegisterChatServiceServer(grpcServer, s)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %s", err)
