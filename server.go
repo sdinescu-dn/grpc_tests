@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -8,6 +9,14 @@ import (
 	"github.com/sdinescu-dn/grpc_tests/chat"
 	"google.golang.org/grpc"
 )
+
+type Server struct {
+}
+
+func (s *Server) SayHello(ctx context.Context, in *Message) (*Message, error) {
+	log.Printf("Receive message body from client: %s", in.Body)
+	return &Message{Body: "Hello From the Server!"}, nil
+}
 
 func main() {
 
